@@ -11,13 +11,9 @@ class App extends React.Component {
     super(props);
 
     this.state = {
-      searchResults: [{artist: 'artist1', name: 'song1', album: 'album1', id: 1},
-                      {artist: 'artist2', name: 'song2', album: 'album2', id: 2},
-                      {artist: 'artist3', name: 'song3', album: 'album3', id: 3}],
+      searchResults: [],
       playlistName: 'playlist 1',
-      playlistTracks: [{artist: 'playlistArtist1', name: 'playlistSong1', album: 'playlistAlbum1', id: 4},
-                       {artist: 'playlistArtist2', name: 'playlistSong2', album: 'playlistAlbum2', id: 5},
-                       {artist: 'playlistArtist3', name: 'playlistSong3', album: 'playlistAlbum3', id: 6}]
+      playlistTracks: []
     }
 
     this.addTrack = this.addTrack.bind(this);
@@ -45,23 +41,42 @@ class App extends React.Component {
     this.setState({ playlistTracks: tracks });
   }
 
-  updatePlaylistName(name) {
-    this.setState({ playlistName: name });
+  updatePlaylistName(playlistName) {
+    this.setState({ playlistName: playlistName });
   }
 
   savePlaylist(){
-    const trackUris = this.state.playlistTracks.map(track => track.uri);
+    // const trackUris = this.state.playlistTracks.map(track => track.uri);
+    // Spotify.savePlaylist(this.state.playlistName, trackUris).then(() => {
+    //   this.setState({
+    //     playlistName: 'New Playlist',
+    //     playlistTracks: []
+    //   });
+    // });
+    const trackUris = this.state.playlistTracks.map(track => {
+      return track.uri
+    });
+
+    Spotify.savePlaylist(this.state.playlistName, trackUris).then(() => {
+      this.setState({
+        playlistName: 'New Playlist',
+        playlistTracks: []
+      });
+    });
   }
 
   search(searchTerm) {
+    console.log('Starting search')
     Spotify.search(searchTerm).then(searchResults => {
-      this.setState({ searchResults: searchResults })
-    })
+      console.log(searchResults);
+      this.setState({ searchResults: searchResults });
+    });
   }
 
   render() {
     return (
       <div>
+        {console.log('Starting App')}
         <h1>Ja<span className="highlight">mmm</span>ing</h1>
         <div className="App">
           <SearchBar onSearch={this.search}/>
